@@ -1026,6 +1026,8 @@ function calculateStreak() {
     const date = getDateOffsetISO(-offset);
     if (dates.has(date)) {
       streak += 1;
+    } else if (offset === 0) {
+      continue; // Don't break streak if they haven't logged yet today
     } else {
       break;
     }
@@ -1041,20 +1043,20 @@ function getLatestProgressEntry() {
 function calculateRecoveryIndex() {
   const latest = getLatestProgressEntry();
   const hydrationScore = Math.min(getPercent(getHydrationTodayAmount(), state.hydrationTarget), 100);
-  const sleepScore = latest ? Math.min(Math.round((latest.sleep / 8) * 100), 100) : 60;
+  const sleepScore = latest ? Math.min(Math.round((latest.sleep / 8) * 100), 100) : 0;
   const workoutBalance = Math.min(getLastSevenDaysWorkouts().length * 18, 100);
   return Math.round((hydrationScore * 0.35 + sleepScore * 0.35 + workoutBalance * 0.3));
 }
 
 function calculateIntensityScore() {
-  const todayWorkouts = state.workouts.filter((workout) => workout.date === getTodayISO());
+  const todayWorkouts = state.workouts.filter((workout) => workout.date === getTodayISO() && workout.completed);
   const todayMeals = state.meals.filter((meal) => meal.date === getTodayISO());
   const todayProgress = state.progressEntries.find((entry) => entry.date === getTodayISO());
 
   const workoutScore = Math.min(sumBy(todayWorkouts, "duration"), 90);
   const nutritionScore = Math.min(sumBy(todayMeals, "protein"), 60);
   const hydrationScore = Math.min(getHydrationTodayAmount() / 40, 75);
-  const stepsScore = todayProgress ? Math.min(todayProgress.steps / 120, 85) : 20;
+  const stepsScore = todayProgress ? Math.min(todayProgress.steps / 120, 85) : 0;
 
   return Math.min(Math.round((workoutScore + nutritionScore + hydrationScore + stepsScore) / 3), 100);
 }
