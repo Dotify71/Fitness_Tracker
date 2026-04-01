@@ -123,13 +123,36 @@ function bindActions() {
     showToast(`Switched to ${state.theme} theme.`, "success");
   });
 
-  document.getElementById("resetDataBtn").addEventListener("click", () => {
-    const confirmed = window.confirm("Reset all fitness tracker data?");
-    if (!confirmed) return;
+  const resetModal = document.getElementById("resetModal");
+  const cancelResetBtn = document.getElementById("cancelResetBtn");
+  const confirmResetBtn = document.getElementById("confirmResetBtn");
 
+  document.getElementById("resetDataBtn").addEventListener("click", () => {
+    resetModal.classList.add("active");
+  });
+
+  cancelResetBtn.addEventListener("click", () => {
+    resetModal.classList.remove("active");
+  });
+
+  confirmResetBtn.addEventListener("click", () => {
+    resetModal.classList.remove("active");
+
+    const currentTheme = state.theme; // Preserve theme setting
     state = cloneState(defaultState);
+    state.theme = currentTheme;
+
     saveState();
     applyTheme(state.theme);
+
+    // Explicitly reset all forms so inputs are cleared
+    document.querySelectorAll("form").forEach((form) => form.reset());
+
+    // Explictly reset the calculators
+    updateCalculatorOutput("bmiOutput", "0.0", "Enter values to calculate your BMI range.");
+    updateCalculatorOutput("bmrOutput", "0 kcal", "Your resting calorie estimate appears here.");
+    updateCalculatorOutput("calorieGoalOutput", "0 kcal", "Choose a strategy to see your calorie target.");
+
     seedDateInputs();
     renderAll();
     showToast("All tracker data has been reset.", "error");

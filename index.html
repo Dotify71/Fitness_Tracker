@@ -696,6 +696,17 @@
 
     <div id="toastContainer" class="toast-container" aria-live="polite" aria-atomic="true"></div>
 
+    <div id="resetModal" class="modal-overlay">
+      <div class="modal-content">
+        <h3>Reset all fitness tracker data?</h3>
+        <p>This will permanently delete all your workouts, meals, hydration logs, and progress entries. This cannot be undone.</p>
+        <div class="modal-actions">
+          <button id="cancelResetBtn" class="ghost-button" type="button">Cancel</button>
+          <button id="confirmResetBtn" class="primary-button subtle-danger" type="button">Yes, Reset Data</button>
+        </div>
+      </div>
+    </div>
+
     <script src="script.js" defer></script>
   </body>
 </html>
